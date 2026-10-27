@@ -1,0 +1,47 @@
+/* CSS Module do Dashboard - coexiste com styled-components no mesmo componente! */
+/* Isso é o CSS Frankenstein em ação */
+
+.dashboard {
+  padding: 24px;
+}
+
+.dashboardHeader {
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+  /* Dev 2 não sabia que styled-components já cuidava disso */
+}
+
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.chartsSection {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.tableSection {
+  /* conflita com o TableWrapper styled-component do CampaignTable */
+}
+
+/* Dev 3 adicionou !important porque não entendia a especificidade */
+.filterBar {
+  display: flex !important;
+  gap: 12px !important;
+  align-items: center !important;
+  padding: 16px !important;
+  background: #fff !important;
+  border-radius: 8px !important;
+  margin-bottom: 16px !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+}

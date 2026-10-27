@@ -1,0 +1,14 @@
+node_modules
+dist
+coverage
+.env
+.env.local
+.env.*.local
+*.log
+.DS_Store
+PLANO_DE_AULA.md
+ROTEIRO_MODULO_1.md
+ROTEIRO_MODULO_2.md
+ROTEIRO_MODULO_3.md
+ROTEIRO_MODULO_4.md
+api/go.sum
