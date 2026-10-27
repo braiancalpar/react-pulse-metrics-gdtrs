@@ -14,6 +14,7 @@ module.exports = {
     '**/__tests__/**/*.[jt]s?(x)',
     '**/?(*.)+(spec|test).[jt]s?(x)',
   ],
+  testPathIgnorePatterns: ['<rootDir>/e2e/'],
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',
     '!src/**/*.d.ts',
