@@ -1,8 +1,9 @@
-export * from './api';
+import { CampaignChannel, CampaignStatus } from "./api";
+
+export * from "./api";
 
 // Tipos globais - mistura de interfaces e types sem padrão
 export type ID = string | number; // deveria ser só string, mas legado usa number
-export type Status = 'active' | 'paused' | 'ended' | 'draft' | string; // string escapou
 
 export interface DateRange {
   startDate: string | null;
@@ -10,10 +11,10 @@ export interface DateRange {
 }
 
 export interface FilterState {
-  status: string;
+  status: CampaignStatus;
   dateRange: DateRange;
   search?: string;
-  [key: string]: any; // "flexível" demais
+  channel: CampaignChannel;
 }
 
 // Adicionado por dev diferente, sem usar o ApiError acima

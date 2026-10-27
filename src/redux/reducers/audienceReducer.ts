@@ -1,13 +1,30 @@
 import { LOAD_AUDIENCES, AUDIENCE_LOADED, AUDIENCE_ERROR, SELECT_AUDIENCE } from '../types/actionTypes';
+import type { AudienceSegment } from '../../types/api';
 
-const initialState: any = {
+interface AudienceState {
+  list: AudienceSegment[];
+  selected: AudienceSegment | null;
+  loading: boolean;
+  error: string | null;
+}
+
+type AudienceAction =
+  | { type: typeof LOAD_AUDIENCES }
+  | { type: typeof AUDIENCE_LOADED; payload: AudienceSegment[] }
+  | { type: typeof AUDIENCE_ERROR; payload: string }
+  | { type: typeof SELECT_AUDIENCE; payload: AudienceSegment | null };
+
+const initialState: AudienceState = {
   list: [],
   selected: null,
   loading: false,
   error: null,
 };
 
-export function audienceReducer(state: any = initialState, action: any) {
+export function audienceReducer(
+  state: AudienceState = initialState,
+  action: AudienceAction
+): AudienceState {
   switch (action.type) {
     case LOAD_AUDIENCES:
       return { ...state, loading: true };
