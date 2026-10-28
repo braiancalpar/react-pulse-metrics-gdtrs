@@ -121,7 +121,7 @@ describe('CampaignTable', () => {
   });
 
   it('shows expanded campaign details and supports page navigation', () => {
-    renderTable({ totalPages: 3, currentPage: 2, totalItems: 25 });
+    renderTable({ totalPages: 3, currentPage: 1, totalItems: 25 });
 
     fireEvent.click(screen.getAllByTitle('Mais ações')[0]);
     expect(screen.getByText('Objetivo')).toBeInTheDocument();
@@ -130,10 +130,44 @@ describe('CampaignTable', () => {
     expect(screen.queryByText('Objetivo')).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Próxima ›' }));
-    expect(defaultProps.onPageChange).toHaveBeenCalledWith(3);
-    fireEvent.click(screen.getByRole('button', { name: '«' }));
-    expect(defaultProps.onPageChange).toHaveBeenCalledWith(1);
-    expect(screen.getByText('Mostrando 11–20 de 25 campanhas')).toBeInTheDocument();
+    expect(defaultProps.onPageChange).toHaveBeenCalledWith(2);
+    expect(screen.getByRole('button', { name: '«' })).toBeDisabled();
+    expect(screen.getByText('Mostrando 1–10 de 25 campanhas')).toBeInTheDocument();
+  });
+
+  it('renders only the campaigns on the selected page', () => {
+    const manyCampaigns = Array.from({ length: 12 }, (_, index) => ({
+      ...campaigns[0],
+      id: `campaign-${index + 1}`,
+      name: `Campaign ${index + 1}`,
+    }));
+    const props = {
+      ...defaultProps,
+      campaigns: manyCampaigns,
+      totalPages: 2,
+      totalItems: manyCampaigns.length,
+    };
+    const { rerender } = renderTable(props);
+
+    expect(screen.getByText('Campaign 1')).toBeInTheDocument();
+    expect(screen.getByText('Campaign 10')).toBeInTheDocument();
+    expect(screen.queryByText('Campaign 11')).not.toBeInTheDocument();
+    expect(screen.getByText('Mostrando 1–10 de 12 campanhas')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Próxima ›' }));
+    expect(defaultProps.onPageChange).toHaveBeenCalledWith(2);
+
+    rerender(
+      <MemoryRouter>
+        <CampaignTable {...props} currentPage={2} />
+        <LocationDisplay />
+      </MemoryRouter>
+    );
+
+    expect(screen.queryByText('Campaign 1')).not.toBeInTheDocument();
+    expect(screen.getByText('Campaign 11')).toBeInTheDocument();
+    expect(screen.getByText('Campaign 12')).toBeInTheDocument();
+    expect(screen.getByText('Mostrando 11–12 de 12 campanhas')).toBeInTheDocument();
   });
 
   it('navigates to the selected campaign details', () => {

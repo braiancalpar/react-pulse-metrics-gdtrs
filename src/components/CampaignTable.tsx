@@ -187,6 +187,11 @@ const CampaignTable: React.FC<CampaignTableProps> = ({
     return icons[channel] || 'campaign';
   };
 
+  const pageCount = Math.max(totalPages, 1);
+  const currentPageNumber = Math.min(Math.max(currentPage, 1), pageCount);
+  const pageStart = (currentPageNumber - 1) * pageSize;
+  const pageCampaigns = campaigns.slice(pageStart, pageStart + pageSize);
+
   if (loading) {
     return (
       <TableWrapper>
@@ -275,7 +280,7 @@ const CampaignTable: React.FC<CampaignTableProps> = ({
             </tr>
           </thead>
           <tbody>
-            {campaigns.map((campaign: any) => {
+            {pageCampaigns.map((campaign: any) => {
               const isSelected = selectedRows.includes(campaign.id);
               const impressions = campaign.metrics?.impressions ?? campaign.impressions ?? 0;
               const clicks = campaign.metrics?.clicks ?? campaign.clicks ?? 0;
@@ -492,34 +497,34 @@ const CampaignTable: React.FC<CampaignTableProps> = ({
       {totalPages > 1 && (
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px', fontSize: '14px' }}>
           <span style={{ color: '#718096' }}>
-            Mostrando {((currentPage - 1) * pageSize) + 1}–{Math.min(currentPage * pageSize, totalItems)} de {totalItems} campanhas
+            Mostrando {pageStart + 1}–{Math.min(currentPageNumber * pageSize, totalItems)} de {totalItems} campanhas
           </span>
           <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
             <button
               onClick={() => onPageChange(1)}
-              disabled={currentPage === 1}
+              disabled={currentPageNumber === 1}
               style={{
                 padding: '6px 10px',
                 border: '1px solid #e2e8f0',
                 borderRadius: '6px',
                 background: 'white',
-                cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
-                color: currentPage === 1 ? '#cbd5e0' : '#2d3748',
+                cursor: currentPageNumber === 1 ? 'not-allowed' : 'pointer',
+                color: currentPageNumber === 1 ? '#cbd5e0' : '#2d3748',
                 fontSize: '13px',
               }}
             >
               «
             </button>
             <button
-              onClick={() => onPageChange(currentPage - 1)}
-              disabled={currentPage === 1}
+              onClick={() => onPageChange(currentPageNumber - 1)}
+              disabled={currentPageNumber === 1}
               style={{
                 padding: '6px 10px',
                 border: '1px solid #e2e8f0',
                 borderRadius: '6px',
                 background: 'white',
-                cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
-                color: currentPage === 1 ? '#cbd5e0' : '#2d3748',
+                cursor: currentPageNumber === 1 ? 'not-allowed' : 'pointer',
+                color: currentPageNumber === 1 ? '#cbd5e0' : '#2d3748',
                 fontSize: '13px',
               }}
             >
@@ -531,12 +536,12 @@ const CampaignTable: React.FC<CampaignTableProps> = ({
               let page: number;
               if (totalPages <= 5) {
                 page = i + 1;
-              } else if (currentPage <= 3) {
+              } else if (currentPageNumber <= 3) {
                 page = i + 1;
-              } else if (currentPage >= totalPages - 2) {
+              } else if (currentPageNumber >= totalPages - 2) {
                 page = totalPages - 4 + i;
               } else {
-                page = currentPage - 2 + i;
+                page = currentPageNumber - 2 + i;
               }
               return (
                 <button
@@ -545,10 +550,10 @@ const CampaignTable: React.FC<CampaignTableProps> = ({
                   style={{
                     padding: '6px 10px',
                     border: '1px solid',
-                    borderColor: currentPage === page ? '#6c63ff' : '#e2e8f0',
+                    borderColor: currentPageNumber === page ? '#6c63ff' : '#e2e8f0',
                     borderRadius: '6px',
-                    background: currentPage === page ? '#6c63ff' : 'white',
-                    color: currentPage === page ? 'white' : '#2d3748',
+                    background: currentPageNumber === page ? '#6c63ff' : 'white',
+                    color: currentPageNumber === page ? 'white' : '#2d3748',
                     cursor: 'pointer',
                     fontSize: '13px',
                     minWidth: '32px',
@@ -560,15 +565,15 @@ const CampaignTable: React.FC<CampaignTableProps> = ({
             })}
 
             <button
-              onClick={() => onPageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
+              onClick={() => onPageChange(currentPageNumber + 1)}
+              disabled={currentPageNumber === totalPages}
               style={{
                 padding: '6px 10px',
                 border: '1px solid #e2e8f0',
                 borderRadius: '6px',
                 background: 'white',
-                cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
-                color: currentPage === totalPages ? '#cbd5e0' : '#2d3748',
+                cursor: currentPageNumber === totalPages ? 'not-allowed' : 'pointer',
+                color: currentPageNumber === totalPages ? '#cbd5e0' : '#2d3748',
                 fontSize: '13px',
               }}
             >
@@ -576,14 +581,14 @@ const CampaignTable: React.FC<CampaignTableProps> = ({
             </button>
             <button
               onClick={() => onPageChange(totalPages)}
-              disabled={currentPage === totalPages}
+              disabled={currentPageNumber === totalPages}
               style={{
                 padding: '6px 10px',
                 border: '1px solid #e2e8f0',
                 borderRadius: '6px',
                 background: 'white',
-                cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
-                color: currentPage === totalPages ? '#cbd5e0' : '#2d3748',
+                cursor: currentPageNumber === totalPages ? 'not-allowed' : 'pointer',
+                color: currentPageNumber === totalPages ? '#cbd5e0' : '#2d3748',
                 fontSize: '13px',
               }}
             >

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { useTheme } from "../hooks/useTheme";
@@ -54,12 +54,21 @@ const Dashboard: React.FC<DashboardProps> = ({ showWelcome = true }) => {
   const totalPages = Math.ceil(filteredCampaigns.length / pageSize);
   const title = showWelcome && user ? `Olá, ${user.name}` : "Dashboard";
 
+  useEffect(() => {
+    setCurrentPage((page) =>
+      Math.min(Math.max(page, 1), Math.max(totalPages, 1)),
+    );
+  }, [totalPages]);
+
   return (
     <DashboardWrapper theme={theme}>
       <DashboardHeader
         title={title}
         dateRange={filters.dateRange}
-        onDateRangeChange={(v) => handleFilterChange("dateRange", v)}
+        onDateRangeChange={(v) => {
+          setCurrentPage(1);
+          handleFilterChange("dateRange", v);
+        }}
       />
 
       <MetricsOverview
@@ -75,8 +84,14 @@ const Dashboard: React.FC<DashboardProps> = ({ showWelcome = true }) => {
       <DashboardFilters
         statusFilter={filters.status}
         channelFilter={filters.channel}
-        onStatusChange={(v) => handleFilterChange("status", v)}
-        onChannelChange={(v) => handleFilterChange("channel", v)}
+        onStatusChange={(v) => {
+          setCurrentPage(1);
+          handleFilterChange("status", v);
+        }}
+        onChannelChange={(v) => {
+          setCurrentPage(1);
+          handleFilterChange("channel", v);
+        }}
       />
 
       <CampaignTable
