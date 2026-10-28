@@ -6,9 +6,10 @@ interface LineChartProps {
   label?: string;
   color?: string;
   height?: number;
+  tailwind?: boolean;
 }
 
-export function LineChart({ data, label = 'Valor', color = '#2563eb', height = 300 }: LineChartProps) {
+export function LineChart({ data, label = 'Valor', color = '#2563eb', height = 300, tailwind = false }: LineChartProps) {
   const config = {
     type: 'line' as const,
     data: {
@@ -34,5 +35,5 @@ export function LineChart({ data, label = 'Valor', color = '#2563eb', height = 3
     },
   };
 
-  return <ChartWrapper config={config} height={height} />;
+  return <ChartWrapper config={config} height={height} tailwind={tailwind} />;
 }

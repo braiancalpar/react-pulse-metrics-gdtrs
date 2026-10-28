@@ -1,6 +1,5 @@
 import React from 'react';
 import { Select } from '../common/Select';
-import styles from '../../styles/Dashboard.module.css';
 
 // Mix proposital: usa CSS Module + inline styles
 interface DashboardFiltersProps {
@@ -12,12 +11,13 @@ interface DashboardFiltersProps {
 
 export function DashboardFilters({ statusFilter, channelFilter, onStatusChange, onChannelChange }: DashboardFiltersProps) {
   return (
-    <div className={styles.filterBar}>
-      <span style={{ fontSize: 14, fontWeight: 600, color: '#374151' }}>Filtrar por:</span>
+    <div className="mb-4 flex items-center gap-3 rounded-lg bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.1)]">
+      <span className="text-sm font-semibold text-gray-700">Filtrar por:</span>
       <Select
         label="Status"
         value={statusFilter}
         onChange={onStatusChange}
+        tailwind
         options={[
           { value: 'all', label: 'Todos' },
           { value: 'active', label: 'Ativo' },
@@ -29,6 +29,7 @@ export function DashboardFilters({ statusFilter, channelFilter, onStatusChange, 
         label="Canal"
         value={channelFilter}
         onChange={onChannelChange}
+        tailwind
         options={[
           { value: 'all', label: 'Todos os canais' },
           { value: 'google', label: 'Google' },

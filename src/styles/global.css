@@ -1,10 +1,29 @@
-@import './reset.css';
-@import './variables.css';
+@import "./reset.css" layer(base);
+@import "./variables.css";
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+@theme {
+  --color-primary: #6c63ff;
+  --color-surface: #ffffff;
+  --color-background: #f5f7fa;
+  --color-text-primary: #2d3748;
+  --color-text-secondary: #718096;
+  --color-border: #e2e8f0;
+  --color-success: #38a169;
+  --color-warning: #ed8936;
+  --color-error: #e53e3e;
+  --radius: 8px;
+}
 
 /* Estilos globais bagunçados - acumulados por 3 anos */
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif !important;
 }
 
 /* Adicionado pelo Dev 1 */
@@ -23,7 +42,7 @@ body {
 
 /* Dev 3 copiou do Stack Overflow */
 .clearfix::after {
-  content: '';
+  content: "";
   display: table;
   clear: both;
 }
@@ -56,16 +75,42 @@ body {
   font-weight: 600;
 }
 
-.status-active { background: #dcfce7; color: #166534 !important; }
-.status-paused { background: #fef9c3; color: #854d0e !important; }
-.status-ended { background: #f3f4f6; color: #374151 !important; }
-.status-draft { background: #dbeafe; color: #1e40af !important; }
-.status-error { background: #fee2e2; color: #991b1b !important; }
+.status-active {
+  background: #dcfce7;
+  color: #166534 !important;
+}
+
+.status-paused {
+  background: #fef9c3;
+  color: #854d0e !important;
+}
+
+.status-ended {
+  background: #f3f4f6;
+  color: #374151 !important;
+}
+
+.status-draft {
+  background: #dbeafe;
+  color: #1e40af !important;
+}
+
+.status-error {
+  background: #fee2e2;
+  color: #991b1b !important;
+}
 
 /* Animações - Dev 1 */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .fade-in {
@@ -73,7 +118,20 @@ body {
 }
 
 /* Scrollbar customizada - Dev 4 copiou do CSS-tricks */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: #f3f4f6; }
-::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #9ca3af !important; }
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f3f4f6;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af !important;
+}
