@@ -49,11 +49,11 @@ const CampaignDetailModal: React.FC<Props> = ({
 
   return (
     <div
-      className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50"
+      className="fixed inset-0 z-1000 flex items-center justify-center bg-black/50"
       onClick={onClose}
     >
       <div
-        className="h-auto max-h-[80vh] w-[600px] overflow-y-auto rounded-lg bg-white p-8"
+        className="h-auto max-h-[80vh] w-150 overflow-y-auto rounded-lg bg-white p-8"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-5 flex justify-between">
@@ -79,7 +79,7 @@ const CampaignDetailModal: React.FC<Props> = ({
         <div className="flex flex-wrap justify-end gap-2">
           <button
             onClick={onViewDetails}
-            className="rounded-md bg-[#6c63ff] px-4 py-2 text-white hover:bg-[#5952e8]"
+            className="rounded-md bg-primary px-4 py-2 text-white hover:bg-[#5952e8]"
           >
             Ver Detalhes Completos
           </button>

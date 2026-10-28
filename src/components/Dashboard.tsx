@@ -50,7 +50,7 @@ const Dashboard: React.FC<DashboardProps> = ({ showWelcome = true }) => {
   }, [totalPages]);
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#f5f7fa] p-6">
+    <div className="flex min-h-screen flex-col bg-background p-6">
       <DashboardHeader
         title={title}
         dateRange={filters.dateRange}

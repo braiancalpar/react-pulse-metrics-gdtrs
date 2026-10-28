@@ -29,7 +29,7 @@ export function Select({ options, value, onChange, label, placeholder, disabled,
         value={value}
         onChange={e => onChange?.(e.target.value)}
         disabled={disabled}
-        className={tailwind ? 'min-w-[120px] rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 disabled:cursor-not-allowed disabled:opacity-60' : undefined}
+        className={tailwind ? 'min-w-30 rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 disabled:cursor-not-allowed disabled:opacity-60' : undefined}
         style={tailwind ? undefined : {
           padding: '8px 12px',
           border: '1px solid #e5e7eb',

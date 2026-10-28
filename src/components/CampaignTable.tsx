@@ -187,7 +187,7 @@ const CampaignTable: React.FC<CampaignTableProps> = ({
     return (
       <TableWrapper>
         <div className="p-12 text-center text-gray-500">
-          <div className="mx-auto mb-3 size-8 animate-spin rounded-full border-4 border-gray-200 border-t-[#6c63ff]" />
+          <div className="mx-auto mb-3 size-8 animate-spin rounded-full border-4 border-gray-200 border-t-primary" />
           <p>Carregando campanhas...</p>
         </div>
       </TableWrapper>
@@ -213,7 +213,7 @@ const CampaignTable: React.FC<CampaignTableProps> = ({
           </p>
           <button
             onClick={() => navigate("/campaigns/new")}
-            className="rounded-md bg-[#6c63ff] px-5 py-2 text-white hover:bg-[#5952e8]"
+            className="rounded-md bg-primary px-5 py-2 text-white hover:bg-[#5952e8]"
           >
             Nova Campanha
           </button>
@@ -311,7 +311,7 @@ const CampaignTable: React.FC<CampaignTableProps> = ({
                         className="cursor-pointer"
                         onClick={() => onCampaignClick(campaign)}
                       >
-                        <div className="mb-0.5 font-semibold text-[#6c63ff]">
+                        <div className="mb-0.5 font-semibold text-primary">
                           {campaign.name}
                         </div>
                         {!compactMode && (
@@ -344,7 +344,7 @@ const CampaignTable: React.FC<CampaignTableProps> = ({
                         {/* Dropdown de status inline - deveria ser componente */}
                         {showStatusDropdown === campaign.id && (
                           <div
-                            className="absolute left-0 top-full z-[100] mt-1 min-w-[130px] rounded-md border border-gray-200 bg-white shadow-lg"
+                            className="absolute left-0 top-full z-100 mt-1 min-w-32.5 rounded-md border border-gray-200 bg-white shadow-lg"
                           >
                             {["active", "paused", "ended", "draft"]
                               .filter((s) => s !== campaign.status)
@@ -635,7 +635,7 @@ const CampaignTable: React.FC<CampaignTableProps> = ({
                   onClick={() => onPageChange(page)}
                   className={`min-w-8 rounded-md border px-2.5 py-1.5 text-[13px] ${
                     currentPageNumber === page
-                      ? "border-[#6c63ff] bg-[#6c63ff] text-white"
+                      ? "border-primary bg-primary text-white"
                       : "border-gray-200 bg-white text-gray-800 hover:bg-gray-50"
                   }`}
                 >

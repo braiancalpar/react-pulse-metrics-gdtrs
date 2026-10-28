@@ -28,7 +28,7 @@ const DashboardCharts: React.FC<Props> = ({
   <div className="mb-6 grid grid-cols-[2fr_1fr] gap-4">
     <section className="rounded-lg bg-white p-5 shadow-[0_2px_4px_rgba(0,0,0,0.1)]">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <h3 className="text-base font-semibold text-[#2d3748]">
+        <h3 className="text-base font-semibold text-text-primary">
           Performance ao Longo do Tempo
         </h3>
         <div className="flex flex-wrap gap-2">
@@ -55,7 +55,7 @@ const DashboardCharts: React.FC<Props> = ({
     </section>
 
     <section className="rounded-lg bg-white p-5 shadow-[0_2px_4px_rgba(0,0,0,0.1)]">
-      <h3 className="mb-4 text-base font-semibold text-[#2d3748]">
+      <h3 className="mb-4 text-base font-semibold text-text-primary">
         Distribuição por Canal
       </h3>
       <PieChart
