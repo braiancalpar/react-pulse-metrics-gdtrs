@@ -8,7 +8,7 @@ import { useFilters } from '../hooks/useFilters';
 import { useMetrics } from '../hooks/useMetrics';
 import { usePagination } from '../hooks/usePagination';
 import { store } from '../redux/store';
-import { clearCampaigns } from '../redux/actions/campaignActions';
+import { clearCampaigns } from '../redux/slices/campaignSlice';
 import { resetFilters } from '../redux/actions/filterActions';
 import { campaignService } from '../services/campaignService';
 import { metricsService } from '../services/metricsService';

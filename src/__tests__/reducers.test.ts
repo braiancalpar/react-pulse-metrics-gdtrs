@@ -1,14 +1,8 @@
 import {
   AUDIENCE_ERROR,
   AUDIENCE_LOADED,
-  CLEAR_CAMPAIGNS,
   CLOSE_MODAL,
-  CREATE_CAMPAIGN,
-  DELETE_CAMPAIGN,
   DELETE_REPORT,
-  FETCH_CAMPAIGNS_ERROR,
-  FETCH_CAMPAIGNS_START,
-  FETCH_CAMPAIGNS_SUCCESS,
   FETCH_REPORTS_FAILED,
   FETCH_REPORTS_REQUEST,
   FETCH_REPORTS_SUCCESS,
@@ -29,13 +23,19 @@ import {
   SET_LOADING,
   SET_SIDEBAR_OPEN,
   SET_USER_DATA,
-  UPDATE_CAMPAIGN,
   UPDATE_USER_PREFERENCES,
   ADD_NOTIFICATION,
   APPLY_FILTERS,
 } from '../redux/types/actionTypes';
 import { audienceReducer } from '../redux/reducers/audienceReducer';
-import { campaignReducer } from '../redux/reducers/campaignReducer';
+import campaignReducer, {
+  clearCampaigns,
+  createCampaign,
+  deleteCampaign,
+  fetchCampaigns,
+  selectCampaign,
+  updateCampaign,
+} from '../redux/slices/campaignSlice';
 import { filterReducer } from '../redux/reducers/filterReducer';
 import { metricsReducer } from '../redux/reducers/metricsReducer';
 import { reportReducer } from '../redux/reducers/reportReducer';
@@ -82,42 +82,51 @@ describe('campaignReducer', () => {
   });
 
   it('tracks loading, successful fetches, and fetch errors', () => {
-    const loading = campaignReducer(undefined, { type: FETCH_CAMPAIGNS_START });
+    const loading = campaignReducer(undefined, fetchCampaigns.pending('request-1', undefined));
     expect(loading).toMatchObject({ loading: true, error: null, selected: null });
 
-    const loaded = campaignReducer(loading, {
-      type: FETCH_CAMPAIGNS_SUCCESS,
-      payload: [campaign],
-    });
+    const loaded = campaignReducer(
+      loading,
+      fetchCampaigns.fulfilled([campaign], 'request-1', undefined),
+    );
     expect(loaded).toMatchObject({ loading: false, list: [campaign], total: 1, error: null });
 
-    expect(campaignReducer(loaded, {
-      type: FETCH_CAMPAIGNS_ERROR,
-      payload: 'Network error',
-    })).toMatchObject({ loading: false, error: 'Network error', list: [campaign] });
+    expect(campaignReducer(
+      loaded,
+      fetchCampaigns.rejected(new Error('Network error'), 'request-2', undefined),
+    )).toMatchObject({ loading: false, error: 'Network error', list: [campaign] });
   });
 
   it('selects, updates, creates, deletes, and clears campaigns', () => {
-    const selected = campaignReducer(undefined, { type: 'SET_CAMPAIGN', payload: campaign });
+    const selected = campaignReducer(undefined, selectCampaign(campaign));
     expect(selected.selected).toEqual(campaign);
 
-    const withCampaign = campaignReducer(selected, { type: CREATE_CAMPAIGN, payload: campaign });
+    const withCampaign = campaignReducer(
+      selected,
+      createCampaign.fulfilled(campaign, 'request-1', campaign),
+    );
     expect(withCampaign.list).toEqual([campaign]);
     expect(withCampaign.total).toBe(1);
 
     const updatedCampaign = { ...campaign, name: 'Updated launch' };
     const updated = campaignReducer(
       { ...withCampaign, selected: campaign },
-      { type: UPDATE_CAMPAIGN, payload: updatedCampaign }
+      updateCampaign.fulfilled(updatedCampaign, 'request-2', {
+        id: campaign.id,
+        data: updatedCampaign,
+      }),
     );
     expect(updated.list).toEqual([updatedCampaign]);
     expect(updated.selected).toEqual(updatedCampaign);
 
-    const deleted = campaignReducer(updated, { type: DELETE_CAMPAIGN, payload: campaign.id });
+    const deleted = campaignReducer(
+      updated,
+      deleteCampaign.fulfilled(campaign.id, 'request-3', campaign.id),
+    );
     expect(deleted.list).toEqual([]);
     expect(deleted.total).toBe(0);
 
-    expect(campaignReducer(deleted, { type: CLEAR_CAMPAIGNS })).toEqual(
+    expect(campaignReducer(deleted, clearCampaigns())).toEqual(
       campaignReducer(undefined, { type: 'UNKNOWN' } as never)
     );
   });
@@ -125,13 +134,19 @@ describe('campaignReducer', () => {
   it('does not replace a different selected campaign during an update', () => {
     const otherCampaign = { ...campaign, id: 'campaign-2' };
     const state = {
-      ...campaignReducer(undefined, { type: CREATE_CAMPAIGN, payload: campaign }),
+      ...campaignReducer(
+        undefined,
+        createCampaign.fulfilled(campaign, 'request-1', campaign),
+      ),
       selected: otherCampaign,
     };
 
     expect(campaignReducer(state, {
-      type: UPDATE_CAMPAIGN,
-      payload: { ...campaign, name: 'Updated' },
+      ...updateCampaign.fulfilled(
+        { ...campaign, name: 'Updated' },
+        'request-2',
+        { id: campaign.id, data: { name: 'Updated' } },
+      ),
     }).selected).toEqual(otherCampaign);
   });
 });
