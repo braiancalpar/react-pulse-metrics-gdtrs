@@ -53,8 +53,9 @@ export function useDashboardData() {
     [dispatch],
   );
 
-  const campaignList =
-    reduxCampaigns.length > 0 ? reduxCampaigns : MOCK_CAMPAIGNS;
+  const campaignList = [
+    ...(reduxCampaigns.length > 0 ? reduxCampaigns : MOCK_CAMPAIGNS),
+  ];
 
   const filteredCampaigns = campaignList.filter((campaign) => {
     if (filters.status !== "all" && campaign.status !== filters.status)

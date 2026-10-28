@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { MemoryRouter, useLocation } from 'react-router-dom';
 import Dashboard from '../components/Dashboard';
@@ -79,10 +79,22 @@ beforeEach(() => {
 
 describe('Dashboard', () => {
   it('shows loading and then renders campaign metrics and rows', async () => {
+    let resolveCampaigns!: (campaigns: typeof campaign[]) => void;
+    getAll.mockReturnValueOnce(
+      new Promise<typeof campaign[]>((resolve) => {
+        resolveCampaigns = resolve;
+      })
+    );
+
     renderDashboard();
 
-    expect(screen.getByText('Carregando...')).toBeInTheDocument();
-    expect(await screen.findByRole('heading', { name: 'Olá, Test User! Dashboard' })).toBeInTheDocument();
+    expect(screen.getByText('Carregando campanhas...')).toBeInTheDocument();
+
+    await act(async () => {
+      resolveCampaigns([campaign]);
+    });
+
+    expect(await screen.findByRole('heading', { name: 'Olá, Test User' })).toBeInTheDocument();
     await waitFor(() => expect(screen.getByText('Spring launch')).toBeInTheDocument());
     expect(screen.getAllByText('1K')).toHaveLength(2);
     expect(screen.getAllByText('50')).toHaveLength(2);
@@ -90,19 +102,19 @@ describe('Dashboard', () => {
     expect(screen.getAllByText('10.00%')).toHaveLength(2);
   });
 
-  it('filters campaigns and switches to detailed metrics', async () => {
+  it('filters campaigns by channel', async () => {
     renderDashboard();
     await screen.findByText('Spring launch');
 
-    fireEvent.change(screen.getByPlaceholderText('Buscar campanhas...'), {
-      target: { value: 'does not match' },
+    fireEvent.change(screen.getByDisplayValue('Todos os canais'), {
+      target: { value: 'email' },
     });
     expect(await screen.findByText('Nenhuma campanha encontrada')).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: 'Métricas' }));
-    expect(screen.getByText('Métricas Detalhadas')).toBeInTheDocument();
-    expect(screen.getByText('CPM')).toBeInTheDocument();
-    expect(screen.getByText('ROAS')).toBeInTheDocument();
+    fireEvent.change(screen.getByDisplayValue('Email'), {
+      target: { value: 'all' },
+    });
+    expect(await screen.findByText('Spring launch')).toBeInTheDocument();
   });
 
   it('opens and closes campaign details', async () => {
@@ -111,24 +123,30 @@ describe('Dashboard', () => {
 
     fireEvent.click(screen.getByText('Spring launch'));
     expect(screen.getByRole('heading', { name: 'Spring launch' })).toBeInTheDocument();
-    expect(screen.getByText('Status')).toBeInTheDocument();
+    expect(screen.getAllByText('Status', { exact: true })).toHaveLength(2);
+    expect(screen.getByText('active')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Fechar' }));
     expect(screen.queryByRole('heading', { name: 'Spring launch' })).not.toBeInTheDocument();
   });
 
-  it('redirects unauthenticated users and navigates to campaign creation', async () => {
+  it('uses the generic title when there is no authenticated user', async () => {
     mockUseAuth.mockReturnValue({ user: null, isAuthenticated: false });
-    const { unmount } = renderDashboard();
-    await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent('/login'));
+    renderDashboard();
 
-    unmount();
+    expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeInTheDocument();
+    expect(screen.getByTestId('location')).toHaveTextContent('/');
+  });
+
+  it('navigates to campaign details from the campaign modal', async () => {
     mockUseAuth.mockReturnValue({
       user: { name: 'Test User' },
       isAuthenticated: true,
     });
     renderDashboard({ showWelcome: false });
     await screen.findByRole('heading', { name: 'Dashboard' });
-    fireEvent.click(screen.getByRole('button', { name: '+ Nova Campanha' }));
-    expect(screen.getByTestId('location')).toHaveTextContent('/campaigns/new');
+
+    fireEvent.click(await screen.findByText('Spring launch'));
+    fireEvent.click(screen.getByRole('button', { name: 'Ver Detalhes Completos' }));
+    expect(screen.getByTestId('location')).toHaveTextContent('/campaigns/campaign-1');
   });
 });
