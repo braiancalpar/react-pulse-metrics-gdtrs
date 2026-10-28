@@ -1,16 +1,6 @@
 // Action Types - constantes de string (dívida técnica: deveria usar Redux Toolkit createSlice)
 // Adicionados por 3 devs diferentes ao longo de 2 anos, sem padrão consistente
 
-// Campaigns
-export const FETCH_CAMPAIGNS_START = 'FETCH_CAMPAIGNS_START';
-export const FETCH_CAMPAIGNS_SUCCESS = 'FETCH_CAMPAIGNS_SUCCESS';
-export const FETCH_CAMPAIGNS_ERROR = 'FETCH_CAMPAIGNS_ERROR';
-export const SET_CAMPAIGN = 'SET_CAMPAIGN';
-export const UPDATE_CAMPAIGN = 'UPDATE_CAMPAIGN';
-export const DELETE_CAMPAIGN = 'DELETE_CAMPAIGN';
-export const CREATE_CAMPAIGN = 'CREATE_CAMPAIGN';
-export const CLEAR_CAMPAIGNS = 'CLEAR_CAMPAIGNS';
-
 // Metrics (dev 2 usou convenção diferente)
 export const METRICS_LOADING = 'METRICS_LOADING';
 export const METRICS_SUCCESS = 'METRICS_SUCCESS';
