@@ -15,12 +15,13 @@
     "test:e2e": "E2E_BASE_URL=http://localhost:3001 jest --config jest.e2e.config.js --runInBand --forceExit"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^2.13.0",
     "axios": "^1.20.0",
     "chart.js": "3.7.0",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-redux": "7.2.6",
-    "react-router-dom": "5.3.4",
+    "react-router-dom": "6.30.3",
     "redux": "4.1.2",
     "redux-thunk": "2.4.1",
     "styled-components": "5.3.6"

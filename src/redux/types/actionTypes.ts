@@ -1,16 +1,6 @@
 // Action Types - constantes de string (dívida técnica: deveria usar Redux Toolkit createSlice)
 // Adicionados por 3 devs diferentes ao longo de 2 anos, sem padrão consistente
 
-// Campaigns
-export const FETCH_CAMPAIGNS_START = 'FETCH_CAMPAIGNS_START';
-export const FETCH_CAMPAIGNS_SUCCESS = 'FETCH_CAMPAIGNS_SUCCESS';
-export const FETCH_CAMPAIGNS_ERROR = 'FETCH_CAMPAIGNS_ERROR';
-export const SET_CAMPAIGN = 'SET_CAMPAIGN';
-export const UPDATE_CAMPAIGN = 'UPDATE_CAMPAIGN';
-export const DELETE_CAMPAIGN = 'DELETE_CAMPAIGN';
-export const CREATE_CAMPAIGN = 'CREATE_CAMPAIGN';
-export const CLEAR_CAMPAIGNS = 'CLEAR_CAMPAIGNS';
-
 // Metrics (dev 2 usou convenção diferente)
 export const METRICS_LOADING = 'METRICS_LOADING';
 export const METRICS_SUCCESS = 'METRICS_SUCCESS';
@@ -49,3 +39,12 @@ export const CLOSE_MODAL = 'CLOSE_MODAL';
 export const SET_SIDEBAR_OPEN = 'SET_SIDEBAR_OPEN';
 export const ADD_NOTIFICATION = 'ADD_NOTIFICATION';
 export const REMOVE_NOTIFICATION = 'REMOVE_NOTIFICATION';
+
+// Campaigns (mantidos para compatibilidade com reducers e consumidores antigos)
+export const CLEAR_CAMPAIGNS = 'CLEAR_CAMPAIGNS';
+export const CREATE_CAMPAIGN = 'CREATE_CAMPAIGN';
+export const DELETE_CAMPAIGN = 'DELETE_CAMPAIGN';
+export const FETCH_CAMPAIGNS_ERROR = 'FETCH_CAMPAIGNS_ERROR';
+export const FETCH_CAMPAIGNS_START = 'FETCH_CAMPAIGNS_START';
+export const FETCH_CAMPAIGNS_SUCCESS = 'FETCH_CAMPAIGNS_SUCCESS';
+export const UPDATE_CAMPAIGN = 'UPDATE_CAMPAIGN';
