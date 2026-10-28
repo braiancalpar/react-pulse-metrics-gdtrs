@@ -2,7 +2,7 @@
 // Dívida: duplica o useCampaigns mas via Redux, confuso para o time
 import { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchCampaigns } from '../redux/actions/campaignActions';
+import { fetchCampaigns } from '../redux/slices/campaignSlice';
 
 export function useCampaignData(filters?: any) {
   const dispatch = useDispatch();

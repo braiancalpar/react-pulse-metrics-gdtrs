@@ -1,98 +1,75 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import styled from "styled-components";
-import styles from "../styles/Dashboard.module.css";
 
-// styled-components (Dev 1)
-const TableWrapper = styled.div`
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  overflow-x: auto;
-`;
+const TableWrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
+  <div className="overflow-x-auto rounded-lg bg-white shadow-[0_2px_4px_rgba(0,0,0,0.1)]">{children}</div>
+);
 
-const Table = styled.table`
-  width: 100%;
-  border-collapse: collapse;
-`;
+const Table: React.FC<React.PropsWithChildren> = ({ children }) => (
+  <table className="w-full border-collapse">{children}</table>
+);
 
-const Th = styled.th<{ sortable?: boolean }>`
-  padding: 12px 16px;
-  text-align: left;
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: #718096;
-  background: #f7fafc;
-  border-bottom: 1px solid #e2e8f0;
-  white-space: nowrap;
-  cursor: ${(props) => (props.sortable ? "pointer" : "default")};
-  user-select: none;
+type ThProps = React.ThHTMLAttributes<HTMLTableCellElement> & {
+  sortable?: boolean;
+};
 
-  &:hover {
-    ${(props) => (props.sortable ? "background: #edf2f7;" : "")}
+const Th: React.FC<ThProps> = ({
+  sortable = false,
+  className = "",
+  ...props
+}) => (
+  <th
+    {...props}
+    className={`whitespace-nowrap border-b border-gray-200 bg-gray-50 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500 ${
+      sortable ? "cursor-pointer select-none hover:bg-gray-100" : ""
+    } ${className}`}
+  />
+);
+
+const Td: React.FC<React.TdHTMLAttributes<HTMLTableCellElement>> = ({
+  className = "",
+  ...props
+}) => (
+  <td
+    {...props}
+    className={`border-b border-gray-200 px-4 py-3 align-middle text-sm text-gray-800 ${className}`}
+  />
+);
+
+type TrProps = React.HTMLAttributes<HTMLTableRowElement> & {
+  selected?: boolean;
+};
+
+const Tr: React.FC<TrProps> = ({ selected = false, className = "", ...props }) => (
+  <tr
+    {...props}
+    className={`transition-colors ${
+      selected
+        ? "bg-[#f0eeff] hover:bg-[#e6e0ff]"
+        : "hover:bg-gray-50"
+    } [&:last-child>td]:border-b-0 ${className}`}
+  />
+);
+
+const statusBadgeClasses: Record<string, string> = {
+  active: "bg-green-100 text-green-800",
+  paused: "bg-orange-100 text-orange-800",
+  ended: "bg-gray-200 text-gray-700",
+  draft: "bg-blue-100 text-blue-800",
+};
+
+const StatusBadge: React.FC<
+  React.PropsWithChildren<React.HTMLAttributes<HTMLSpanElement>> & {
+    status: string;
   }
-`;
-
-const Td = styled.td`
-  padding: 12px 16px;
-  font-size: 14px;
-  color: #2d3748;
-  border-bottom: 1px solid #e2e8f0;
-  vertical-align: middle;
-`;
-
-const Tr = styled.tr<{ selected?: boolean }>`
-  background: ${(props) => (props.selected ? "#f0eeff" : "transparent")};
-  transition: background 0.15s;
-
-  &:hover {
-    background: ${(props) => (props.selected ? "#e6e0ff" : "#f7fafc")};
-  }
-
-  &:last-child td {
-    border-bottom: none;
-  }
-`;
-
-// Badge sem componente separado (Dev 2 em pressa)
-const StatusBadge = styled.span<{ status: string }>`
-  display: inline-flex;
-  align-items: center;
-  padding: 3px 10px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
-  background: ${(props) => {
-    switch (props.status) {
-      case "active":
-        return "#c6f6d5";
-      case "paused":
-        return "#feebc8";
-      case "ended":
-        return "#e2e8f0";
-      case "draft":
-        return "#bee3f8";
-      default:
-        return "#e2e8f0";
-    }
-  }};
-  color: ${(props) => {
-    switch (props.status) {
-      case "active":
-        return "#276749";
-      case "paused":
-        return "#7b341e";
-      case "ended":
-        return "#4a5568";
-      case "draft":
-        return "#2b6cb0";
-      default:
-        return "#4a5568";
-    }
-  }};
-`;
+> = ({ status, className = "", ...props }) => (
+  <span
+    {...props}
+    className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ${
+      statusBadgeClasses[status] ?? "bg-gray-200 text-gray-700"
+    } ${className}`}
+  />
+);
 
 // PROP DRILLING: 12+ props individualmente (deveriam ser agrupadas ou usar context)
 interface CampaignTableProps {
@@ -105,7 +82,6 @@ interface CampaignTableProps {
   totalPages: number;
   pageSize: number;
   totalItems: number;
-  theme: string;
   filters: any; // outro any
   onSort: (field: string) => void;
   onSelectRow: (id: string) => void;
@@ -130,7 +106,6 @@ const CampaignTable: React.FC<CampaignTableProps> = ({
   totalPages,
   pageSize,
   totalItems,
-  theme,
   filters,
   onSort,
   onSelectRow,
@@ -211,9 +186,9 @@ const CampaignTable: React.FC<CampaignTableProps> = ({
   if (loading) {
     return (
       <TableWrapper>
-        <div style={{ padding: "48px", textAlign: "center", color: "#718096" }}>
-          <div className={styles.spinner} style={{ margin: "0 auto 12px" }} />
-          <p style={{ margin: 0 }}>Carregando campanhas...</p>
+        <div className="p-12 text-center text-gray-500">
+          <div className="mx-auto mb-3 size-8 animate-spin rounded-full border-4 border-gray-200 border-t-primary" />
+          <p>Carregando campanhas...</p>
         </div>
       </TableWrapper>
     );
@@ -222,33 +197,23 @@ const CampaignTable: React.FC<CampaignTableProps> = ({
   if (campaigns.length === 0) {
     return (
       <TableWrapper>
-        <div style={{ padding: "48px", textAlign: "center", color: "#718096" }}>
-          <div style={{ marginBottom: "12px" }}>
-            <span
-              className="material-icons"
-              style={{ fontSize: 48, color: "#d1d5db" }}
-            >
+        <div className="p-12 text-center text-gray-500">
+          <div className="mb-3">
+            <span className="material-icons text-5xl text-gray-300">
               inbox
             </span>
           </div>
-          <h3 style={{ margin: "0 0 8px", color: "#4a5568" }}>
+          <h3 className="mb-2 text-lg font-semibold text-gray-700">
             Nenhuma campanha encontrada
           </h3>
-          <p style={{ margin: "0 0 16px" }}>
+          <p className="mb-4">
             {filters.search || filters.status !== "all"
               ? "Tente remover os filtros aplicados"
               : "Crie sua primeira campanha para começar"}
           </p>
           <button
             onClick={() => navigate("/campaigns/new")}
-            style={{
-              padding: "8px 20px",
-              background: "#6c63ff",
-              color: "white",
-              border: "none",
-              borderRadius: "6px",
-              cursor: "pointer",
-            }}
+            className="rounded-md bg-primary px-5 py-2 text-white hover:bg-[#5952e8]"
           >
             Nova Campanha
           </button>
@@ -264,7 +229,7 @@ const CampaignTable: React.FC<CampaignTableProps> = ({
           <thead>
             <tr>
               {/* Checkbox select all */}
-              <Th style={{ width: "40px" }}>
+              <Th className="w-10">
                 <input
                   type="checkbox"
                   checked={
@@ -272,7 +237,7 @@ const CampaignTable: React.FC<CampaignTableProps> = ({
                     campaigns.length > 0
                   }
                   onChange={onSelectAll}
-                  style={{ cursor: "pointer" }}
+                  className="cursor-pointer"
                 />
               </Th>
               <Th sortable onClick={() => onSort("name")}>
@@ -311,7 +276,7 @@ const CampaignTable: React.FC<CampaignTableProps> = ({
                   </Th>
                 </>
               )}
-              {showActions && <Th style={{ width: "80px" }}>Ações</Th>}
+              {showActions && <Th className="w-20">Ações</Th>}
             </tr>
           </thead>
           <tbody>
@@ -338,35 +303,29 @@ const CampaignTable: React.FC<CampaignTableProps> = ({
                         type="checkbox"
                         checked={isSelected}
                         onChange={() => onSelectRow(campaign.id)}
-                        style={{ cursor: "pointer" }}
+                        className="cursor-pointer"
                       />
                     </Td>
                     <Td>
                       <div
-                        style={{ cursor: "pointer" }}
+                        className="cursor-pointer"
                         onClick={() => onCampaignClick(campaign)}
                       >
-                        <div
-                          style={{
-                            fontWeight: "600",
-                            color: "#6c63ff",
-                            marginBottom: "2px",
-                          }}
-                        >
+                        <div className="mb-0.5 font-semibold text-primary">
                           {campaign.name}
                         </div>
                         {!compactMode && (
-                          <div style={{ fontSize: "12px", color: "#718096" }}>
+                          <div className="text-xs text-gray-500">
                             ID: {campaign.id}
                           </div>
                         )}
                       </div>
                     </Td>
                     <Td>
-                      <div style={{ position: "relative" }}>
+                      <div className="relative">
                         <StatusBadge
                           status={campaign.status}
-                          style={{ cursor: "pointer" }}
+                          className="cursor-pointer"
                           onClick={() =>
                             setShowStatusDropdown(
                               showStatusDropdown === campaign.id
@@ -377,8 +336,7 @@ const CampaignTable: React.FC<CampaignTableProps> = ({
                         >
                           {getStatusLabel(campaign.status)}{" "}
                           <span
-                            className="material-icons"
-                            style={{ fontSize: 12, verticalAlign: "middle" }}
+                            className="material-icons align-middle text-xs"
                           >
                             expand_more
                           </span>
@@ -386,18 +344,7 @@ const CampaignTable: React.FC<CampaignTableProps> = ({
                         {/* Dropdown de status inline - deveria ser componente */}
                         {showStatusDropdown === campaign.id && (
                           <div
-                            style={{
-                              position: "absolute",
-                              top: "100%",
-                              left: 0,
-                              background: "white",
-                              border: "1px solid #e2e8f0",
-                              borderRadius: "6px",
-                              boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-                              zIndex: 100,
-                              minWidth: "130px",
-                              marginTop: "4px",
-                            }}
+                            className="absolute left-0 top-full z-100 mt-1 min-w-32.5 rounded-md border border-gray-200 bg-white shadow-lg"
                           >
                             {["active", "paused", "ended", "draft"]
                               .filter((s) => s !== campaign.status)
@@ -408,17 +355,7 @@ const CampaignTable: React.FC<CampaignTableProps> = ({
                                     onStatusChange(campaign.id, status);
                                     setShowStatusDropdown(null);
                                   }}
-                                  style={{
-                                    display: "block",
-                                    width: "100%",
-                                    padding: "8px 12px",
-                                    background: "none",
-                                    border: "none",
-                                    textAlign: "left",
-                                    cursor: "pointer",
-                                    fontSize: "13px",
-                                    color: "#2d3748",
-                                  }}
+                                  className="block w-full px-3 py-2 text-left text-[13px] text-gray-800 hover:bg-gray-50"
                                 >
                                   {getStatusLabel(status)}
                                 </button>
@@ -429,13 +366,7 @@ const CampaignTable: React.FC<CampaignTableProps> = ({
                     </Td>
                     <Td>
                       <span
-                        className="material-icons"
-                        style={{
-                          fontSize: 16,
-                          marginRight: 6,
-                          verticalAlign: "middle",
-                          color: "#718096",
-                        }}
+                        className="material-icons mr-1.5 align-middle text-base text-gray-500"
                       >
                         {getChannelIcon(campaign.channel)}
                       </span>
@@ -447,35 +378,26 @@ const CampaignTable: React.FC<CampaignTableProps> = ({
                     <Td>
                       <div>{formatCurrency(campaign.budget)}</div>
                       {!compactMode && (
-                        <div style={{ fontSize: "11px", marginTop: "2px" }}>
+                        <div className="mt-0.5 text-[11px]">
                           {/* Barra de progresso inline */}
                           <div
-                            style={{
-                              background: "#e2e8f0",
-                              borderRadius: "10px",
-                              height: "4px",
-                              width: "80px",
-                              marginBottom: "2px",
-                            }}
+                            className="mb-0.5 h-1 w-20 overflow-hidden rounded-full bg-gray-200"
                           >
                             <div
-                              style={{
-                                background: isBudgetExceeded
-                                  ? "#e53e3e"
+                              className={`h-full rounded-full transition-[width] duration-300 ${
+                                isBudgetExceeded
+                                  ? "bg-red-600"
                                   : isBudgetNearLimit
-                                    ? "#ed8936"
-                                    : "#48bb78",
-                                borderRadius: "10px",
-                                height: "100%",
-                                width: `${Math.min(budgetUsed, 100)}%`,
-                                transition: "width 0.3s",
-                              }}
+                                    ? "bg-orange-500"
+                                    : "bg-green-500"
+                              }`}
+                              style={{ width: `${Math.min(budgetUsed, 100)}%` }}
                             />
                           </div>
                           <span
-                            style={{
-                              color: isBudgetExceeded ? "#e53e3e" : "#718096",
-                            }}
+                            className={
+                              isBudgetExceeded ? "text-red-600" : "text-gray-500"
+                            }
                           >
                             {budgetUsed.toFixed(0)}% utilizado
                           </span>
@@ -483,13 +405,11 @@ const CampaignTable: React.FC<CampaignTableProps> = ({
                       )}
                     </Td>
                     <Td
-                      style={{
-                        color:
-                          isBudgetExceeded && highlightBudgetExceeded
-                            ? "#e53e3e"
-                            : undefined,
-                        fontWeight: isBudgetExceeded ? "600" : "normal",
-                      }}
+                      className={
+                        isBudgetExceeded
+                          ? `font-semibold ${highlightBudgetExceeded ? "text-red-600" : ""}`
+                          : ""
+                      }
                     >
                       {formatCurrency(spent)}
                     </Td>
@@ -503,14 +423,13 @@ const CampaignTable: React.FC<CampaignTableProps> = ({
                     <Td>{clicks.toLocaleString("pt-BR")}</Td>
                     <Td>
                       <span
-                        style={{
-                          color:
-                            ctr >= 3
-                              ? "#38a169"
-                              : ctr >= 1
-                                ? "#ed8936"
-                                : "#e53e3e",
-                        }}
+                        className={
+                          ctr >= 3
+                            ? "text-green-600"
+                            : ctr >= 1
+                              ? "text-orange-500"
+                              : "text-red-600"
+                        }
                       >
                         {formatPercent(ctr)}
                       </span>
@@ -520,59 +439,49 @@ const CampaignTable: React.FC<CampaignTableProps> = ({
                       <>
                         <Td>
                           <span
-                            style={{
-                              color:
-                                cvr >= 5
-                                  ? "#38a169"
-                                  : cvr >= 2
-                                    ? "#ed8936"
-                                    : "#e53e3e",
-                            }}
+                            className={
+                              cvr >= 5
+                                ? "text-green-600"
+                                : cvr >= 2
+                                  ? "text-orange-500"
+                                  : "text-red-600"
+                            }
                           >
                             {formatPercent(cvr)}
                           </span>
                         </Td>
-                        <Td style={{ fontSize: "13px" }}>
+                        <Td className="text-[13px]">
                           {formatDate(campaign.startDate)}
                         </Td>
-                        <Td style={{ fontSize: "13px" }}>
+                        <Td className="text-[13px]">
                           {campaign.endDate ? (
                             <span
-                              style={{
-                                color:
-                                  new Date(campaign.endDate) < new Date()
-                                    ? "#e53e3e"
-                                    : undefined,
-                              }}
+                              className={
+                                new Date(campaign.endDate) < new Date()
+                                  ? "text-red-600"
+                                  : ""
+                              }
                             >
                               {formatDate(campaign.endDate)}
                             </span>
                           ) : (
-                            <span style={{ color: "#718096" }}>Sem data</span>
+                            <span className="text-gray-500">Sem data</span>
                           )}
                         </Td>
                       </>
                     )}
                     {showActions && (
                       <Td>
-                        <div style={{ display: "flex", gap: "4px" }}>
+                        <div className="flex gap-1">
                           <button
                             onClick={() =>
                               navigate(`/campaigns/${campaign.id}`)
                             }
                             title="Ver detalhes"
-                            style={{
-                              background: "none",
-                              border: "1px solid #e2e8f0",
-                              borderRadius: "4px",
-                              padding: "4px 8px",
-                              cursor: "pointer",
-                              fontSize: "13px",
-                            }}
+                            className="rounded border border-gray-200 px-2 py-1 text-[13px] hover:bg-gray-50"
                           >
                             <span
-                              className="material-icons"
-                              style={{ fontSize: 16 }}
+                              className="material-icons text-base"
                             >
                               visibility
                             </span>
@@ -582,18 +491,10 @@ const CampaignTable: React.FC<CampaignTableProps> = ({
                               navigate(`/campaigns/${campaign.id}/edit`)
                             }
                             title="Editar"
-                            style={{
-                              background: "none",
-                              border: "1px solid #e2e8f0",
-                              borderRadius: "4px",
-                              padding: "4px 8px",
-                              cursor: "pointer",
-                              fontSize: "13px",
-                            }}
+                            className="rounded border border-gray-200 px-2 py-1 text-[13px] hover:bg-gray-50"
                           >
                             <span
-                              className="material-icons"
-                              style={{ fontSize: 16 }}
+                              className="material-icons text-base"
                             >
                               edit
                             </span>
@@ -607,18 +508,10 @@ const CampaignTable: React.FC<CampaignTableProps> = ({
                               )
                             }
                             title="Mais ações"
-                            style={{
-                              background: "none",
-                              border: "1px solid #e2e8f0",
-                              borderRadius: "4px",
-                              padding: "4px 8px",
-                              cursor: "pointer",
-                              fontSize: "13px",
-                            }}
+                            className="rounded border border-gray-200 px-2 py-1 text-[13px] hover:bg-gray-50"
                           >
                             <span
-                              className="material-icons"
-                              style={{ fontSize: 16 }}
+                              className="material-icons text-base"
                             >
                               more_vert
                             </span>
@@ -643,98 +536,39 @@ const CampaignTable: React.FC<CampaignTableProps> = ({
                         }
                       >
                         <div
-                          style={{
-                            padding: "16px",
-                            background: "#f7fafc",
-                            borderRadius: "6px",
-                            display: "grid",
-                            gridTemplateColumns: "repeat(4, 1fr)",
-                            gap: "12px",
-                          }}
+                          className="grid grid-cols-2 gap-3 rounded-md bg-gray-50 p-4 sm:grid-cols-4"
                         >
                           <div>
-                            <p
-                              style={{
-                                fontSize: "11px",
-                                color: "#718096",
-                                margin: "0 0 2px",
-                                textTransform: "uppercase",
-                              }}
-                            >
+                            <p className="mb-0.5 text-[11px] uppercase text-gray-500">
                               Objetivo
                             </p>
-                            <p
-                              style={{
-                                fontSize: "14px",
-                                fontWeight: "600",
-                                margin: 0,
-                              }}
-                            >
+                            <p className="text-sm font-semibold">
                               {campaign.objective || "Conversões"}
                             </p>
                           </div>
                           <div>
-                            <p
-                              style={{
-                                fontSize: "11px",
-                                color: "#718096",
-                                margin: "0 0 2px",
-                                textTransform: "uppercase",
-                              }}
-                            >
+                            <p className="mb-0.5 text-[11px] uppercase text-gray-500">
                               Audiência
                             </p>
-                            <p
-                              style={{
-                                fontSize: "14px",
-                                fontWeight: "600",
-                                margin: 0,
-                              }}
-                            >
+                            <p className="text-sm font-semibold">
                               {campaign.audience || "Geral"}
                             </p>
                           </div>
                           <div>
-                            <p
-                              style={{
-                                fontSize: "11px",
-                                color: "#718096",
-                                margin: "0 0 2px",
-                                textTransform: "uppercase",
-                              }}
-                            >
+                            <p className="mb-0.5 text-[11px] uppercase text-gray-500">
                               CPA
                             </p>
-                            <p
-                              style={{
-                                fontSize: "14px",
-                                fontWeight: "600",
-                                margin: 0,
-                              }}
-                            >
+                            <p className="text-sm font-semibold">
                               {conversions > 0 && spent > 0
                                 ? formatCurrency(spent / conversions)
                                 : "-"}
                             </p>
                           </div>
                           <div>
-                            <p
-                              style={{
-                                fontSize: "11px",
-                                color: "#718096",
-                                margin: "0 0 2px",
-                                textTransform: "uppercase",
-                              }}
-                            >
+                            <p className="mb-0.5 text-[11px] uppercase text-gray-500">
                               ROAS
                             </p>
-                            <p
-                              style={{
-                                fontSize: "14px",
-                                fontWeight: "600",
-                                margin: 0,
-                              }}
-                            >
+                            <p className="text-sm font-semibold">
                               {spent > 0
                                 ? `${((conversions * 150) / spent).toFixed(2)}x`
                                 : "-"}
@@ -753,48 +587,32 @@ const CampaignTable: React.FC<CampaignTableProps> = ({
 
       {/* Paginação inline (deveria ser componente Pagination) */}
       {totalPages > 1 && (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginTop: "16px",
-            fontSize: "14px",
-          }}
-        >
-          <span style={{ color: "#718096" }}>
+        <div className="mt-4 flex items-center justify-between text-sm">
+          <span className="text-gray-500">
             Mostrando {pageStart + 1}–
             {Math.min(currentPageNumber * pageSize, totalItems)} de {totalItems}{" "}
             campanhas
           </span>
-          <div style={{ display: "flex", gap: "4px", alignItems: "center" }}>
+          <div className="flex items-center gap-1">
             <button
               onClick={() => onPageChange(1)}
               disabled={currentPageNumber === 1}
-              style={{
-                padding: "6px 10px",
-                border: "1px solid #e2e8f0",
-                borderRadius: "6px",
-                background: "white",
-                cursor: currentPageNumber === 1 ? "not-allowed" : "pointer",
-                color: currentPageNumber === 1 ? "#cbd5e0" : "#2d3748",
-                fontSize: "13px",
-              }}
+              className={`rounded-md border border-gray-200 bg-white px-2.5 py-1.5 text-[13px] ${
+                currentPageNumber === 1
+                  ? "cursor-not-allowed text-gray-300"
+                  : "text-gray-800 hover:bg-gray-50"
+              }`}
             >
               «
             </button>
             <button
               onClick={() => onPageChange(currentPageNumber - 1)}
               disabled={currentPageNumber === 1}
-              style={{
-                padding: "6px 10px",
-                border: "1px solid #e2e8f0",
-                borderRadius: "6px",
-                background: "white",
-                cursor: currentPageNumber === 1 ? "not-allowed" : "pointer",
-                color: currentPageNumber === 1 ? "#cbd5e0" : "#2d3748",
-                fontSize: "13px",
-              }}
+              className={`rounded-md border border-gray-200 bg-white px-2.5 py-1.5 text-[13px] ${
+                currentPageNumber === 1
+                  ? "cursor-not-allowed text-gray-300"
+                  : "text-gray-800 hover:bg-gray-50"
+              }`}
             >
               ‹ Anterior
             </button>
@@ -815,19 +633,11 @@ const CampaignTable: React.FC<CampaignTableProps> = ({
                 <button
                   key={page}
                   onClick={() => onPageChange(page)}
-                  style={{
-                    padding: "6px 10px",
-                    border: "1px solid",
-                    borderColor:
-                      currentPageNumber === page ? "#6c63ff" : "#e2e8f0",
-                    borderRadius: "6px",
-                    background:
-                      currentPageNumber === page ? "#6c63ff" : "white",
-                    color: currentPageNumber === page ? "white" : "#2d3748",
-                    cursor: "pointer",
-                    fontSize: "13px",
-                    minWidth: "32px",
-                  }}
+                  className={`min-w-8 rounded-md border px-2.5 py-1.5 text-[13px] ${
+                    currentPageNumber === page
+                      ? "border-primary bg-primary text-white"
+                      : "border-gray-200 bg-white text-gray-800 hover:bg-gray-50"
+                  }`}
                 >
                   {page}
                 </button>
@@ -837,32 +647,22 @@ const CampaignTable: React.FC<CampaignTableProps> = ({
             <button
               onClick={() => onPageChange(currentPageNumber + 1)}
               disabled={currentPageNumber === totalPages}
-              style={{
-                padding: "6px 10px",
-                border: "1px solid #e2e8f0",
-                borderRadius: "6px",
-                background: "white",
-                cursor:
-                  currentPageNumber === totalPages ? "not-allowed" : "pointer",
-                color: currentPageNumber === totalPages ? "#cbd5e0" : "#2d3748",
-                fontSize: "13px",
-              }}
+              className={`rounded-md border border-gray-200 bg-white px-2.5 py-1.5 text-[13px] ${
+                currentPageNumber === totalPages
+                  ? "cursor-not-allowed text-gray-300"
+                  : "text-gray-800 hover:bg-gray-50"
+              }`}
             >
               Próxima ›
             </button>
             <button
               onClick={() => onPageChange(totalPages)}
               disabled={currentPageNumber === totalPages}
-              style={{
-                padding: "6px 10px",
-                border: "1px solid #e2e8f0",
-                borderRadius: "6px",
-                background: "white",
-                cursor:
-                  currentPageNumber === totalPages ? "not-allowed" : "pointer",
-                color: currentPageNumber === totalPages ? "#cbd5e0" : "#2d3748",
-                fontSize: "13px",
-              }}
+              className={`rounded-md border border-gray-200 bg-white px-2.5 py-1.5 text-[13px] ${
+                currentPageNumber === totalPages
+                  ? "cursor-not-allowed text-gray-300"
+                  : "text-gray-800 hover:bg-gray-50"
+              }`}
             >
               »
             </button>

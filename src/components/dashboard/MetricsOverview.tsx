@@ -1,42 +1,4 @@
 import React from "react";
-import styled from "styled-components";
-
-const MetricsGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  margin-bottom: 24px;
-
-  @media (max-width: 1200px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-  }
-`;
-
-const MetricCard = styled.div<{ color: string }>`
-  background: white;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  border-left: 4px solid ${(props) => props.color};
-`;
-
-const KPIRow = styled.div`
-  display: flex;
-  gap: 16px;
-  margin-bottom: 24px;
-`;
-
-const KPICard = styled.div`
-  flex: 1;
-  background: white;
-  border-radius: 8px;
-  padding: 16px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  text-align: center;
-`;
 
 interface Metrics {
   totalImpressions: number;
@@ -78,224 +40,103 @@ const MetricsOverview: React.FC<Props> = ({
     avgCVR,
   } = metrics;
   const cpc = totalClicks > 0 ? totalSpend / totalClicks : 0;
+  const cards = [
+    {
+      label: "Impressões Totais",
+      value: formatNumber(totalImpressions),
+      icon: "visibility",
+      iconBackground: "bg-[#f0eeff]",
+      borderColor: "#6c63ff",
+      trend: "↑ 12.5% vs período anterior",
+      trendColor: "text-[#38a169]",
+    },
+    {
+      label: "Total de Cliques",
+      value: totalClicks.toLocaleString("pt-BR"),
+      icon: "ads_click",
+      iconBackground: "bg-[#f0fff4]",
+      borderColor: "#48bb78",
+      trend: "↑ 8.3% vs período anterior",
+      trendColor: "text-[#38a169]",
+    },
+    {
+      label: "Conversões",
+      value: totalConversions.toLocaleString("pt-BR"),
+      icon: "track_changes",
+      iconBackground: "bg-[#fffaf0]",
+      borderColor: "#ed8936",
+      trend: "↓ 2.1% vs período anterior",
+      trendColor: "text-[#e53e3e]",
+    },
+    {
+      label: "Gasto Total",
+      value: formatCurrency(totalSpend),
+      icon: "payments",
+      iconBackground: "bg-[#fff5f5]",
+      borderColor: "#e53e3e",
+      trend: `ROI: ${
+        totalSpend > 0
+          ? (((totalConversions * 150 - totalSpend) / totalSpend) * 100).toFixed(
+              1,
+            )
+          : "0"
+      }%`,
+      trendColor: "text-[#38a169]",
+    },
+  ];
+  const kpis = [
+    { label: "CTR Médio", value: `${avgCTR.toFixed(2)}%` },
+    { label: "Taxa de Conversão", value: `${avgCVR.toFixed(2)}%` },
+    { label: "Campanhas Ativas", value: `${activeCampaignsCount}` },
+    {
+      label: "CPC Médio",
+      value: cpc > 0 ? formatCurrency(cpc) : "R$ 0,00",
+    },
+  ];
 
   return (
     <>
-      <MetricsGrid>
-        <MetricCard color="#6c63ff">
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "flex-start",
-            }}
+      <div className="mb-6 grid grid-cols-1 gap-4 min-[769px]:grid-cols-2 min-[1201px]:grid-cols-4">
+        {cards.map((card) => (
+          <section
+            key={card.label}
+            className="rounded-lg border-l-4 bg-white p-5 shadow-[0_2px_4px_rgba(0,0,0,0.1)]"
+            style={{ borderLeftColor: card.borderColor }}
           >
-            <div>
-              <p style={{ color: "#718096", fontSize: 13, margin: "0 0 8px" }}>
-                Impressões Totais
-              </p>
-              <h2
-                style={{
-                  fontSize: 28,
-                  fontWeight: 700,
-                  margin: 0,
-                  color: "#2d3748",
-                }}
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="mb-2 text-[13px] text-gray-500">{card.label}</p>
+                <h2 className="text-[28px] font-bold text-gray-800">
+                  {card.value}
+                </h2>
+              </div>
+              <div
+                className={`rounded-lg p-2.5 ${card.iconBackground}`}
+                aria-hidden="true"
               >
-                {formatNumber(totalImpressions)}
-              </h2>
+                <span className="material-icons text-[22px]">{card.icon}</span>
+              </div>
             </div>
-            <div
-              style={{ background: "#f0eeff", borderRadius: 8, padding: 10 }}
-            >
-              <span className="material-icons" style={{ fontSize: 22 }}>
-                visibility
-              </span>
-            </div>
-          </div>
-          <p style={{ margin: "8px 0 0", fontSize: 13, color: "#38a169" }}>
-            ↑ 12.5% vs período anterior
-          </p>
-        </MetricCard>
+            <p className={`mt-2 text-[13px] ${card.trendColor}`}>
+              {card.trend}
+            </p>
+          </section>
+        ))}
+      </div>
 
-        <MetricCard color="#48bb78">
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "flex-start",
-            }}
+      <div className="mb-6 flex gap-4">
+        {kpis.map((kpi) => (
+          <section
+            key={kpi.label}
+            className="flex-1 rounded-lg bg-white p-4 text-center shadow-[0_2px_4px_rgba(0,0,0,0.1)]"
           >
-            <div>
-              <p style={{ color: "#718096", fontSize: 13, margin: "0 0 8px" }}>
-                Total de Cliques
-              </p>
-              <h2
-                style={{
-                  fontSize: 28,
-                  fontWeight: 700,
-                  margin: 0,
-                  color: "#2d3748",
-                }}
-              >
-                {totalClicks.toLocaleString("pt-BR")}
-              </h2>
-            </div>
-            <div
-              style={{ background: "#f0fff4", borderRadius: 8, padding: 10 }}
-            >
-              <span className="material-icons" style={{ fontSize: 22 }}>
-                ads_click
-              </span>
-            </div>
-          </div>
-          <p style={{ margin: "8px 0 0", fontSize: 13, color: "#38a169" }}>
-            ↑ 8.3% vs período anterior
-          </p>
-        </MetricCard>
-
-        <MetricCard color="#ed8936">
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "flex-start",
-            }}
-          >
-            <div>
-              <p style={{ color: "#718096", fontSize: 13, margin: "0 0 8px" }}>
-                Conversões
-              </p>
-              <h2
-                style={{
-                  fontSize: 28,
-                  fontWeight: 700,
-                  margin: 0,
-                  color: "#2d3748",
-                }}
-              >
-                {totalConversions.toLocaleString("pt-BR")}
-              </h2>
-            </div>
-            <div
-              style={{ background: "#fffaf0", borderRadius: 8, padding: 10 }}
-            >
-              <span className="material-icons" style={{ fontSize: 22 }}>
-                track_changes
-              </span>
-            </div>
-          </div>
-          <p style={{ margin: "8px 0 0", fontSize: 13, color: "#e53e3e" }}>
-            ↓ 2.1% vs período anterior
-          </p>
-        </MetricCard>
-
-        <MetricCard color="#e53e3e">
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "flex-start",
-            }}
-          >
-            <div>
-              <p style={{ color: "#718096", fontSize: 13, margin: "0 0 8px" }}>
-                Gasto Total
-              </p>
-              <h2
-                style={{
-                  fontSize: 28,
-                  fontWeight: 700,
-                  margin: 0,
-                  color: "#2d3748",
-                }}
-              >
-                {formatCurrency(totalSpend)}
-              </h2>
-            </div>
-            <div
-              style={{ background: "#fff5f5", borderRadius: 8, padding: 10 }}
-            >
-              <span className="material-icons" style={{ fontSize: 22 }}>
-                payments
-              </span>
-            </div>
-          </div>
-          <p style={{ margin: "8px 0 0", fontSize: 13, color: "#38a169" }}>
-            ROI:{" "}
-            {totalSpend > 0
-              ? (
-                  ((totalConversions * 150 - totalSpend) / totalSpend) *
-                  100
-                ).toFixed(1)
-              : "0"}
-            %
-          </p>
-        </MetricCard>
-      </MetricsGrid>
-
-      <KPIRow>
-        <KPICard>
-          <p style={{ color: "#718096", fontSize: 13, margin: "0 0 4px" }}>
-            CTR Médio
-          </p>
-          <h3
-            style={{
-              fontSize: 22,
-              fontWeight: 700,
-              margin: 0,
-              color: "#2d3748",
-            }}
-          >
-            {avgCTR.toFixed(2)}%
-          </h3>
-        </KPICard>
-        <KPICard>
-          <p style={{ color: "#718096", fontSize: 13, margin: "0 0 4px" }}>
-            Taxa de Conversão
-          </p>
-          <h3
-            style={{
-              fontSize: 22,
-              fontWeight: 700,
-              margin: 0,
-              color: "#2d3748",
-            }}
-          >
-            {avgCVR.toFixed(2)}%
-          </h3>
-        </KPICard>
-        <KPICard>
-          <p style={{ color: "#718096", fontSize: 13, margin: "0 0 4px" }}>
-            Campanhas Ativas
-          </p>
-          <h3
-            style={{
-              fontSize: 22,
-              fontWeight: 700,
-              margin: 0,
-              color: "#2d3748",
-            }}
-          >
-            {activeCampaignsCount}
-          </h3>
-        </KPICard>
-        <KPICard>
-          <p style={{ color: "#718096", fontSize: 13, margin: "0 0 4px" }}>
-            CPC Médio
-          </p>
-          <h3
-            style={{
-              fontSize: 22,
-              fontWeight: 700,
-              margin: 0,
-              color: "#2d3748",
-            }}
-          >
-            {cpc > 0 ? formatCurrency(cpc) : "R$ 0,00"}
-          </h3>
-        </KPICard>
-      </KPIRow>
+            <p className="mb-1 text-[13px] text-gray-500">{kpi.label}</p>
+            <h3 className="text-[22px] font-bold text-gray-800">
+              {kpi.value}
+            </h3>
+          </section>
+        ))}
+      </div>
     </>
   );
 };

@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import { MemoryRouter, useLocation } from 'react-router-dom';
 import Dashboard from '../components/Dashboard';
 import { store } from '../redux/store';
-import { clearCampaigns } from '../redux/actions/campaignActions';
+import { clearCampaigns } from '../redux/slices/campaignSlice';
 import { resetMetrics } from '../redux/actions/metricsActions';
 import { useAuth } from '../hooks/useAuth';
 import { useTheme } from '../hooks/useTheme';

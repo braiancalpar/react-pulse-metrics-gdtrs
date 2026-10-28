@@ -9,9 +9,14 @@ interface ChartWrapperProps {
   config: ChartConfiguration;
   height?: number;
   width?: number;
+  tailwind?: boolean;
 }
 
-export function ChartWrapper({ config, height = 300 }: ChartWrapperProps) {
+export function ChartWrapper({
+  config,
+  height = 300,
+  tailwind = false,
+}: ChartWrapperProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const chartRef = useRef<Chart | null>(null);
 
@@ -30,7 +35,10 @@ export function ChartWrapper({ config, height = 300 }: ChartWrapperProps) {
   }, [JSON.stringify(config)]);
 
   return (
-    <div style={{ position: 'relative', height }}>
+    <div
+      className={tailwind ? "relative" : undefined}
+      style={tailwind ? { height } : { position: "relative", height }}
+    >
       <canvas ref={canvasRef} />
     </div>
   );

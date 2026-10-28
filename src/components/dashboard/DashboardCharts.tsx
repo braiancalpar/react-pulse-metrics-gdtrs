@@ -1,21 +1,6 @@
 import React from "react";
-import styled from "styled-components";
 import { LineChart } from "../Chart/LineChart";
 import { PieChart } from "../Chart/PieChart";
-
-const ChartsRow = styled.div`
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 16px;
-  margin-bottom: 24px;
-`;
-
-const ChartContainer = styled.div`
-  background: white;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-`;
 
 interface ChannelData {
   channel: string;
@@ -40,34 +25,17 @@ const DashboardCharts: React.FC<Props> = ({
   timeSeriesData,
   byChannelData,
 }) => (
-  <ChartsRow>
-    <ChartContainer>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: 16,
-        }}
-      >
-        <h3
-          style={{ margin: 0, fontSize: 16, fontWeight: 600, color: "#2d3748" }}
-        >
+  <div className="mb-6 grid grid-cols-[2fr_1fr] gap-4">
+    <section className="rounded-lg bg-white p-5 shadow-[0_2px_4px_rgba(0,0,0,0.1)]">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <h3 className="text-base font-semibold text-text-primary">
           Performance ao Longo do Tempo
         </h3>
-        <div style={{ display: "flex", gap: 8 }}>
+        <div className="flex flex-wrap gap-2">
           {["impressoes", "cliques", "conversoes"].map((metric) => (
             <button
               key={metric}
-              style={{
-                padding: "4px 12px",
-                border: "1px solid #e2e8f0",
-                borderRadius: 20,
-                background: "white",
-                cursor: "pointer",
-                fontSize: 12,
-                color: "#718096",
-              }}
+              className="rounded-full border border-gray-200 bg-white px-3 py-1 text-xs text-gray-500 hover:bg-gray-50"
             >
               {metric.charAt(0).toUpperCase() + metric.slice(1)}
             </button>
@@ -82,18 +50,12 @@ const DashboardCharts: React.FC<Props> = ({
         label="Cliques"
         color="#6c63ff"
         height={200}
+        tailwind
       />
-    </ChartContainer>
+    </section>
 
-    <ChartContainer>
-      <h3
-        style={{
-          margin: "0 0 16px",
-          fontSize: 16,
-          fontWeight: 600,
-          color: "#2d3748",
-        }}
-      >
+    <section className="rounded-lg bg-white p-5 shadow-[0_2px_4px_rgba(0,0,0,0.1)]">
+      <h3 className="mb-4 text-base font-semibold text-text-primary">
         Distribuição por Canal
       </h3>
       <PieChart
@@ -101,9 +63,10 @@ const DashboardCharts: React.FC<Props> = ({
         data={byChannelData.map((c) => c.clicks)}
         colors={CHANNEL_COLORS}
         height={200}
+        tailwind
       />
-    </ChartContainer>
-  </ChartsRow>
+    </section>
+  </div>
 );
 
 export default DashboardCharts;

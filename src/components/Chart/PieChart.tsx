@@ -6,11 +6,12 @@ interface PieChartProps {
   data: number[];
   colors?: string[];
   height?: number;
+  tailwind?: boolean;
 }
 
 const DEFAULT_COLORS = ['#2563eb', '#7c3aed', '#db2777', '#10b981', '#f59e0b', '#ef4444', '#0891b2', '#65a30d'];
 
-export function PieChart({ labels, data, colors = DEFAULT_COLORS, height = 300 }: PieChartProps) {
+export function PieChart({ labels, data, colors = DEFAULT_COLORS, height = 300, tailwind = false }: PieChartProps) {
   const config = {
     type: 'pie' as const,
     data: {
@@ -22,5 +23,5 @@ export function PieChart({ labels, data, colors = DEFAULT_COLORS, height = 300 }
       plugins: { legend: { position: 'right' as const } },
     },
   };
-  return <ChartWrapper config={config} height={height} />;
+  return <ChartWrapper config={config} height={height} tailwind={tailwind} />;
 }
