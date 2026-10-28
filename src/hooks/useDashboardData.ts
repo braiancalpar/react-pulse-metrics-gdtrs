@@ -15,6 +15,16 @@ interface DashboardFilters {
   channel: string;
 }
 
+interface DashboardCampaign {
+  id: string;
+  status: string;
+  name: string;
+  channel: string;
+  startDate?: string;
+  spent?: number;
+  metrics?: Partial<Campaign["metrics"]>;
+}
+
 const dateRangeDays: Record<string, number> = { "7d": 7, "30d": 30, "90d": 90 };
 
 export function useDashboardData() {
@@ -53,7 +63,7 @@ export function useDashboardData() {
     [dispatch],
   );
 
-  const campaignList =
+  const campaignList: DashboardCampaign[] =
     reduxCampaigns.length > 0 ? reduxCampaigns : MOCK_CAMPAIGNS;
 
   const filteredCampaigns = campaignList.filter((campaign) => {

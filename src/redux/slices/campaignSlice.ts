@@ -1,6 +1,22 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { createAction, createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { campaignService } from "../../services/campaignService";
 import type { Campaign } from "../../types/api";
+import {
+  CLEAR_CAMPAIGNS,
+  CREATE_CAMPAIGN,
+  DELETE_CAMPAIGN as LEGACY_DELETE_CAMPAIGN,
+  FETCH_CAMPAIGNS_ERROR,
+  FETCH_CAMPAIGNS_START,
+  FETCH_CAMPAIGNS_SUCCESS,
+  UPDATE_CAMPAIGN as LEGACY_UPDATE_CAMPAIGN,
+} from "../types/actionTypes";
+
+const fetchCampaignsSuccess = createAction<Campaign[]>(FETCH_CAMPAIGNS_SUCCESS);
+const fetchCampaignsError = createAction<string>(FETCH_CAMPAIGNS_ERROR);
+const selectLegacyCampaign = createAction<Campaign>("SET_CAMPAIGN");
+const createLegacyCampaign = createAction<Campaign>(CREATE_CAMPAIGN);
+const updateLegacyCampaign = createAction<Campaign>(LEGACY_UPDATE_CAMPAIGN);
+const deleteLegacyCampaign = createAction<string>(LEGACY_DELETE_CAMPAIGN);
 
 // createAsyncThunk substitui fetchCampaignsStart + fetchCampaignsSuccess + fetchCampaignsError
 // + o thunk manual — tudo em uma chamada, com tipagem automática
@@ -113,6 +129,40 @@ const campaignSlice = createSlice({
       .addCase(createCampaign.fulfilled, (state, action) => {
         state.list.push(action.payload);
         state.total += 1;
+      })
+      .addCase(FETCH_CAMPAIGNS_START, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchCampaignsSuccess, (state, action) => {
+        state.loading = false;
+        state.list = action.payload;
+        state.total = action.payload.length;
+      })
+      .addCase(fetchCampaignsError, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(selectLegacyCampaign, (state, action) => {
+        state.selected = action.payload;
+      })
+      .addCase(createLegacyCampaign, (state, action) => {
+        state.list.push(action.payload);
+        state.total += 1;
+      })
+      .addCase(updateLegacyCampaign, (state, action) => {
+        const idx = state.list.findIndex((campaign) => campaign.id === action.payload.id);
+        if (idx !== -1) state.list[idx] = action.payload;
+        if (state.selected?.id === action.payload.id) state.selected = action.payload;
+      })
+      .addCase(deleteLegacyCampaign, (state, action) => {
+        state.list = state.list.filter((campaign) => campaign.id !== action.payload);
+        state.total = state.list.length;
+      })
+      .addCase(CLEAR_CAMPAIGNS, (state) => {
+        state.list = [];
+        state.selected = null;
+        state.total = 0;
       });
   },
 });
